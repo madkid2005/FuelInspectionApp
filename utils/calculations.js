@@ -1,7 +1,5 @@
 export const performCalculations = (data) => {
   const {
-    initialFuelQuantities,
-    initialGasQuantities,
     firstfuelcount,
     firstgazcount,
     receivedFuel,
@@ -16,55 +14,49 @@ export const performCalculations = (data) => {
 
 
 
-  // فروش مکانیکی هر نازل
+  // فروش مکانیکی هر نازلTRUE
   const mechanicalSalesPerNozzleFuel = nozzlesFuel.map(nozzle => nozzle.endPeriod - nozzle.startPeriod);
   const mechanicalSalesPerNozzleGas = nozzlesGas.map(nozzle => nozzle.endPeriod - nozzle.startPeriod);
 
-  // کل فروش مکانیکی دوره نازل‌ها
+  // کل فروش مکانیکی دوره نازل‌ها TRUE
   const totalMechanicalSalesFuel = mechanicalSalesPerNozzleFuel.reduce((a, b) => a + b, 0);
   const totalMechanicalSalesGas = mechanicalSalesPerNozzleGas.reduce((a, b) => a + b, 0);
 
-  // کل فراورده بنزین خارج شده دوره از جایگاه
+  // کل فراورده بنزین خارج شده دوره از جایگاه TRUE
   const totalProductFuelOut = firstfuelcount + receivedFuel - finalFuelQuantity;
-  // کل فراورده گاز خارج شده دوره از جایگاه
+  // کل فراورده گاز خارج شده دوره از جایگاه TRUE
   const totalProductGasOut = firstgazcount + receivedGas - finalGasQuantity;
 
 
 
 
 
-  // تفاوت فروش مکانیکی و الکترونیکی
+  // تفاوت فروش مکانیکی و الکترونیکی TRUE
   const mechanicalVsElectronicSalesDiffFuel = totalMechanicalSalesFuel - electronicSalesFuel;
   const mechanicalVsElectronicSalesDiffGas = totalMechanicalSalesGas - electronicSalesGas;
 
 
   
   // محاسبه کسری یا سرک و کسری غیرمجاز
-  let shortageOrSurplusFuel = totalMechanicalSalesFuel - totalProductFuelOut;
+  let shortageOrSurplusFuel = totalProductFuelOut - totalMechanicalSalesFuel;
   let illegalShortageFuel = 0;
-  if (shortageOrSurplusFuel > 0) {
-    
-    illegalShortageFuel = shortageOrSurplusFuel - (totalProductFuelOut * 0.0045);
-  }
+  
 
-  let shortageOrSurplusGas = finalGasQuantity - totalProductGasOut;
+  let shortageOrSurplusGas = totalProductGasOut - totalMechanicalSalesGas;
   let illegalShortageGas = 0;
-  if (shortageOrSurplusGas > 0) {
-    illegalShortageGas = shortageOrSurplusGas - (totalProductGasOut * 0.0045);
-  }
+ 
 
   return {
-    mechanicalSalesPerNozzleFuel,
+    mechanicalSalesPerNozzleFuel, //مقدار فروش مکانیکی هر نازل بنزین:
     mechanicalSalesPerNozzleGas,
-    totalMechanicalSalesFuel,
+    totalMechanicalSalesFuel, //کل فروش مکانیکی دوره نازل‌های بنزین:
     totalMechanicalSalesGas,
-    totalProductFuelOut,
+    totalProductFuelOut,//کل فراورده بنزین خارج شده دوره از جایگاه:
     totalProductGasOut,
-
-    mechanicalVsElectronicSalesDiffFuel,
+    mechanicalVsElectronicSalesDiffFuel, //>تفاوت فروش مکانیکی و الکترونیکی بنزین:
     mechanicalVsElectronicSalesDiffGas,
-    shortageOrSurplusFuel,
-    illegalShortageFuel,
+    shortageOrSurplusFuel,//کسری یا سرک بنزین:
+    illegalShortageFuel,//>کسری غیرمجاز بنزین:
     shortageOrSurplusGas,
     illegalShortageGas
   };
