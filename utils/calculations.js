@@ -1,63 +1,68 @@
 export const performCalculations = (data) => {
   const {
+    tanksFuel,
+    tanksGas,
     firstfuelcount,
-    firstgazcount,
     receivedFuel,
+    firstgazcount,
     receivedGas,
-    electronicSalesFuel,
-    electronicSalesGas,
-    finalFuelQuantity,
-    finalGasQuantity,
     nozzlesFuel,
-    nozzlesGas
+    nozzlesGas,
   } = data;
 
+  // فروش مکانیکی هر نازل
+  const mechanicalSalesPerNozzleFuel = nozzlesFuel.map((nozzle) => nozzle.endPeriod - nozzle.startPeriod);
+  const mechanicalSalesPerNozzleGas = nozzlesGas.map((nozzle) => nozzle.endPeriod - nozzle.startPeriod);
 
+  // فروش مکانیکی نازل‌ها
+  const totalMechanicalSalesFuel = mechanicalSalesPerNozzleFuel.reduce((total, sale) => total + sale, 0);
+  const totalMechanicalSalesGas = mechanicalSalesPerNozzleGas.reduce((total, sale) => total + sale, 0);
 
-  // فروش مکانیکی هر نازلTRUE
-  const mechanicalSalesPerNozzleFuel = nozzlesFuel.map(nozzle => nozzle.endPeriod - nozzle.startPeriod);
-  const mechanicalSalesPerNozzleGas = nozzlesGas.map(nozzle => nozzle.endPeriod - nozzle.startPeriod);
+  // موجودی انتهای دوره
+  const finalFuelQuantity = tanksFuel.reduce((total, tank) => total + tank.endQuantity, 0);
+  const finalGasQuantity = tanksGas.reduce((total, tank) => total + tank.endQuantity, 0);
 
-  // کل فروش مکانیکی دوره نازل‌ها TRUE
-  const totalMechanicalSalesFuel = mechanicalSalesPerNozzleFuel.reduce((a, b) => a + b, 0);
-  const totalMechanicalSalesGas = mechanicalSalesPerNozzleGas.reduce((a, b) => a + b, 0);
+  // کل موجودی
+  const totalFuel = firstfuelcount + receivedFuel;
+  const totalGas = firstgazcount + receivedGas;
 
-  // کل فراورده بنزین خارج شده دوره از جایگاه TRUE
-  const totalProductFuelOut = firstfuelcount + receivedFuel - finalFuelQuantity;
-  // کل فراورده گاز خارج شده دوره از جایگاه TRUE
-  const totalProductGasOut = firstgazcount + receivedGas - finalGasQuantity;
+  // کل فراورده خارج شده دوره از جایگاه
+  const totalProductFuelOut = totalFuel - finalFuelQuantity;
+  const totalProductGasOut = totalGas - finalGasQuantity;
 
+  // بعد از فروش باید موجود باشد
+  const afterSalesFuel = totalFuel - totalMechanicalSalesFuel;
+  const afterSalesGas = totalGas - totalMechanicalSalesGas;
 
-
-
-
-  // تفاوت فروش مکانیکی و الکترونیکی TRUE
-  const mechanicalVsElectronicSalesDiffFuel = totalMechanicalSalesFuel - electronicSalesFuel;
-  const mechanicalVsElectronicSalesDiffGas = totalMechanicalSalesGas - electronicSalesGas;
-
+  // تفاوت موجودی و فروش
+  const shortageOrSurplusFuel =  afterSalesFuel - finalFuelQuantity    ;
+  const shortageOrSurplusGas =   afterSalesGas - finalGasQuantity  ;
 
   
-  // محاسبه کسری یا سرک و کسری غیرمجاز
-  let shortageOrSurplusFuel = totalProductFuelOut - totalMechanicalSalesFuel;
-  let illegalShortageFuel = 0;
-  
+  // کسری غیرمجاز
+  const allowableShortageFuel = totalMechanicalSalesFuel * 0.0045;
+  const illegalShortageFuel = Math.abs(allowableShortageFuel - shortageOrSurplusFuel  );
 
-  let shortageOrSurplusGas = totalProductGasOut - totalMechanicalSalesGas;
-  let illegalShortageGas = 0;
- 
+  const allowableShortageGas = totalMechanicalSalesGas * 0.0045;
+  const illegalShortageGas = Math.abs( allowableShortageGas - shortageOrSurplusGas  );
+
 
   return {
-    mechanicalSalesPerNozzleFuel, //مقدار فروش مکانیکی هر نازل بنزین:
+    mechanicalSalesPerNozzleFuel,
     mechanicalSalesPerNozzleGas,
-    totalMechanicalSalesFuel, //کل فروش مکانیکی دوره نازل‌های بنزین:
+    totalMechanicalSalesFuel,
     totalMechanicalSalesGas,
-    totalProductFuelOut,//کل فراورده بنزین خارج شده دوره از جایگاه:
+    finalFuelQuantity,
+    finalGasQuantity,
+    totalFuel,
+    totalGas,
+    totalProductFuelOut,
     totalProductGasOut,
-    mechanicalVsElectronicSalesDiffFuel, //>تفاوت فروش مکانیکی و الکترونیکی بنزین:
-    mechanicalVsElectronicSalesDiffGas,
-    shortageOrSurplusFuel,//کسری یا سرک بنزین:
-    illegalShortageFuel,//>کسری غیرمجاز بنزین:
+    afterSalesFuel,
+    afterSalesGas,
+    shortageOrSurplusFuel,
+    illegalShortageFuel,
     shortageOrSurplusGas,
-    illegalShortageGas
+    illegalShortageGas,
   };
 };

@@ -1,210 +1,139 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 const InputForm = ({ onCalculate }) => {
-  const [fuelStationName, setFuelStationName] = useState('');
-  const [numGasTanks, setNumGasTanks] = useState('');
-  const [numFuelTanks, setNumFuelTanks] = useState('');
-  const [initialGasQuantities, setInitialGasQuantities] = useState([]);
-  const [initialFuelQuantities, setInitialFuelQuantities] = useState([]);
   const [firstfuelcount, setFirstFuelCount] = useState('');
-  const [firstgazcount, setFirstGazCount] = useState('');
-
-  const [receivedGas, setReceivedGas] = useState('');
   const [receivedFuel, setReceivedFuel] = useState('');
-  const [electronicSalesFuel, setElectronicSalesFuel] = useState('');
-  const [electronicSalesGas, setElectronicSalesGas] = useState('');
-  const [nozzlesFuel, setNozzlesFuel] = useState([]);
-  const [nozzlesGas, setNozzlesGas] = useState([]);
-  const [controlPeriodStart, setControlPeriodStart] = useState('');
-  const [controlPeriodEnd, setControlPeriodEnd] = useState('');
-  const [finalFuelQuantity, setFinalFuelQuantity] = useState('');
-  const [finalGasQuantity, setFinalGasQuantity] = useState('');
+  const [firstgazcount, setFirstGazCount] = useState('');
+  const [receivedGas, setReceivedGas] = useState('');
+  const [nozzlesFuel, setNozzlesFuel] = useState([{ startPeriod: '', endPeriod: '' }]);
+  const [nozzlesGas, setNozzlesGas] = useState([{ startPeriod: '', endPeriod: '' }]);
+  const [tanksFuel, setTanksFuel] = useState([{ endQuantity: '' }]);
+  const [tanksGas, setTanksGas] = useState([{ endQuantity: '' }]);
+
+  const handleAddNozzleFuel = () => setNozzlesFuel([...nozzlesFuel, { startPeriod: '', endPeriod: '' }]);
+  const handleAddNozzleGas = () => setNozzlesGas([...nozzlesGas, { startPeriod: '', endPeriod: '' }]);
+  const handleAddTankFuel = () => setTanksFuel([...tanksFuel, { endQuantity: '' }]);
+  const handleAddTankGas = () => setTanksGas([...tanksGas, { endQuantity: '' }]);
 
   const handleCalculate = () => {
     const data = {
-      fuelStationName,
-      numGasTanks: parseInt(numGasTanks, 10),
-      numFuelTanks: parseInt(numFuelTanks, 10),
-      initialGasQuantities: initialGasQuantities.map(Number),
-      initialFuelQuantities: initialFuelQuantities.map(Number),
       firstfuelcount: parseFloat(firstfuelcount),
+      receivedFuel: parseFloat(receivedFuel),
       firstgazcount: parseFloat(firstgazcount),
       receivedGas: parseFloat(receivedGas),
-      receivedFuel: parseFloat(receivedFuel),
-      electronicSalesFuel: parseFloat(electronicSalesFuel),
-      electronicSalesGas: parseFloat(electronicSalesGas),
-      nozzlesFuel: nozzlesFuel.map(nozzle => ({
-        startPeriod: parseFloat(nozzle.startPeriod),
-        endPeriod: parseFloat(nozzle.endPeriod)
-      })),
-      nozzlesGas: nozzlesGas.map(nozzle => ({
-        startPeriod: parseFloat(nozzle.startPeriod),
-        endPeriod: parseFloat(nozzle.endPeriod)
-      })),
-      controlPeriodStart,
-      controlPeriodEnd,
-      finalFuelQuantity: parseFloat(finalFuelQuantity),
-      finalGasQuantity: parseFloat(finalGasQuantity)
+      nozzlesFuel: nozzlesFuel.map(nozzle => ({ startPeriod: parseFloat(nozzle.startPeriod), endPeriod: parseFloat(nozzle.endPeriod) })),
+      nozzlesGas: nozzlesGas.map(nozzle => ({ startPeriod: parseFloat(nozzle.startPeriod), endPeriod: parseFloat(nozzle.endPeriod) })),
+      tanksFuel: tanksFuel.map(tank => ({ endQuantity: parseFloat(tank.endQuantity) })),
+      tanksGas: tanksGas.map(tank => ({ endQuantity: parseFloat(tank.endQuantity) })),
     };
     onCalculate(data);
   };
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <Text>اسم جایگاه سوخت:</Text>
-      <TextInput value={fuelStationName} onChangeText={setFuelStationName} />
+    <View style={styles.container}>
+      <Text style={styles.label}>مقدار ابتدای دوره بنزین:</Text>
+      <TextInput style={styles.input} value={firstfuelcount} onChangeText={setFirstFuelCount} keyboardType="numeric" />
 
-      <Text>تعداد مخازن بنزین:</Text>
-      <TextInput
-        value={numFuelTanks}
-        onChangeText={(value) => {
-          setNumFuelTanks(value);
-          setInitialFuelQuantities(new Array(Number(value)).fill(''));
-        }}
-        keyboardType="numeric"
-      />
+      <Text style={styles.label}>مقدار رسیده دوره بنزین:</Text>
+      <TextInput style={styles.input} value={receivedFuel} onChangeText={setReceivedFuel} keyboardType="numeric" />
 
-      {initialFuelQuantities.map((_, index) => (
-        <View key={index}>
-          <Text>مقدار بنزین مخزن {index + 1}:</Text>
-          <TextInput
-            value={initialFuelQuantities[index]}
-            onChangeText={(value) => {
-              const newQuantities = [...initialFuelQuantities];
-              newQuantities[index] = value;
-              setInitialFuelQuantities(newQuantities);
-            }}
-            keyboardType="numeric"
-          />
-        </View>
-      ))}
+      <Text style={styles.label}>مقدار ابتدای دوره گاز:</Text>
+      <TextInput style={styles.input} value={firstgazcount} onChangeText={setFirstGazCount} keyboardType="numeric" />
 
-      <Text>تعداد مخازن گاز:</Text>
-      <TextInput
-        value={numGasTanks}
-        onChangeText={(value) => {
-          setNumGasTanks(value);
-          setInitialGasQuantities(new Array(Number(value)).fill(''));
-        }}
-        keyboardType="numeric"
-      />
+      <Text style={styles.label}>مقدار رسیده دوره گاز:</Text>
+      <TextInput style={styles.input} value={receivedGas} onChangeText={setReceivedGas} keyboardType="numeric" />
 
-      {initialGasQuantities.map((_, index) => (
-        <View key={index}>
-          <Text>مقدار گاز مخزن {index + 1}:</Text>
-          <TextInput
-            value={initialGasQuantities[index]}
-            onChangeText={(value) => {
-              const newQuantities = [...initialGasQuantities];
-              newQuantities[index] = value;
-              setInitialGasQuantities(newQuantities);
-            }}
-            keyboardType="numeric"
-          />
-        </View>
-      ))}
-
-      
-      <Text> موجوی اول دوره بنزین</Text>
-      <TextInput value={firstfuelcount} onChangeText={setFirstFuelCount} keyboardType="numeric" />
-
-      <Text> موجوی اول دوره گاز</Text>
-      <TextInput value={firstgazcount} onChangeText={setFirstGazCount} keyboardType="numeric" />
-
-      <Text>مقدار بنزین رسیده دوره:</Text>
-      <TextInput value={receivedFuel} onChangeText={setReceivedFuel} keyboardType="numeric" />
-
-      <Text>مقدار گاز رسیده دوره:</Text>
-      <TextInput value={receivedGas} onChangeText={setReceivedGas} keyboardType="numeric" />
-
-      <Text>فروش الکترونیکی بنزین:</Text>
-      <TextInput value={electronicSalesFuel} onChangeText={setElectronicSalesFuel} keyboardType="numeric" />
-
-      <Text>فروش الکترونیکی گاز:</Text>
-      <TextInput value={electronicSalesGas} onChangeText={setElectronicSalesGas} keyboardType="numeric" />
-
-      <Text>دوره کنترل (از تاریخ):</Text>
-      <TextInput value={controlPeriodStart} onChangeText={setControlPeriodStart} keyboardType="numeric" />
-
-      <Text>دوره کنترل (تا تاریخ):</Text>
-      <TextInput value={controlPeriodEnd} onChangeText={setControlPeriodEnd} keyboardType="numeric" />
-
-      <Text>مقدار موجودی انتهای دوره بنزین:</Text>
-      <TextInput value={finalFuelQuantity} onChangeText={setFinalFuelQuantity} keyboardType="numeric" />
-
-      <Text>مقدار موجودی انتهای دوره گاز:</Text>
-      <TextInput value={finalGasQuantity} onChangeText={setFinalGasQuantity} keyboardType="numeric" />
-
-      {/* ورود مقادیر نازل‌های بنزین */}
+      <Text style={styles.label}>نازل‌های بنزین:</Text>
       {nozzlesFuel.map((nozzle, index) => (
-        <View key={index}>
-          <Text>ابتدای دوره نازل بنزین {index + 1}:</Text>
-          <TextInput
-            value={nozzle.startPeriod}
-            onChangeText={(value) => {
-              const newNozzles = [...nozzlesFuel];
-              newNozzles[index] = { ...nozzlesFuel[index], startPeriod: value };
-              setNozzlesFuel(newNozzles);
-            }}
-            keyboardType="numeric"
-          />
-          <Text>انتهای دوره نازل بنزین {index + 1}:</Text>
-          <TextInput
-            value={nozzle.endPeriod}
-            onChangeText={(value) => {
-              const newNozzles = [...nozzlesFuel];
-              newNozzles[index] = { ...nozzlesFuel[index], endPeriod: value };
-              setNozzlesFuel(newNozzles);
-            }}
-            keyboardType="numeric"
-          />
+        <View key={index} style={styles.nozzleContainer}>
+          <Text>نازل {index + 1} - ابتدای دوره:</Text>
+          <TextInput style={styles.input} value={nozzle.startPeriod} onChangeText={text => {
+            const newNozzlesFuel = [...nozzlesFuel];
+            newNozzlesFuel[index].startPeriod = text;
+            setNozzlesFuel(newNozzlesFuel);
+          }} keyboardType="numeric" />
+          <Text>نازل {index + 1} - انتهای دوره:</Text>
+          <TextInput style={styles.input} value={nozzle.endPeriod} onChangeText={text => {
+            const newNozzlesFuel = [...nozzlesFuel];
+            newNozzlesFuel[index].endPeriod = text;
+            setNozzlesFuel(newNozzlesFuel);
+          }} keyboardType="numeric" />
         </View>
       ))}
+      <Button title="اضافه کردن نازل بنزین" onPress={handleAddNozzleFuel} />
 
-      <Button
-        title="افزودن نازل بنزین"
-        onPress={() =>
-          setNozzlesFuel([...nozzlesFuel, { startPeriod: '', endPeriod: '' }])
-        }
-      />
-
-      {/* ورود مقادیر نازل‌های گاز */}
+      <Text style={styles.label}>نازل‌های گاز:</Text>
       {nozzlesGas.map((nozzle, index) => (
-        <View key={index}>
-          <Text>ابتدای دوره نازل گاز {index + 1}:</Text>
-          <TextInput
-            value={nozzle.startPeriod}
-            onChangeText={(value) => {
-              const newNozzles = [...nozzlesGas];
-              newNozzles[index] = { ...nozzlesGas[index], startPeriod: value };
-              setNozzlesGas(newNozzles);
-            }}
-            keyboardType="numeric"
-          />
-          <Text>انتهای دوره نازل گاز {index + 1}:</Text>
-          <TextInput
-            value={nozzle.endPeriod}
-            onChangeText={(value) => {
-              const newNozzles = [...nozzlesGas];
-              newNozzles[index] = { ...nozzlesGas[index], endPeriod: value };
-              setNozzlesGas(newNozzles);
-            }}
-            keyboardType="numeric"
-          />
+        <View key={index} style={styles.nozzleContainer}>
+          <Text>نازل {index + 1} - ابتدای دوره:</Text>
+          <TextInput style={styles.input} value={nozzle.startPeriod} onChangeText={text => {
+            const newNozzlesGas = [...nozzlesGas];
+            newNozzlesGas[index].startPeriod = text;
+            setNozzlesGas(newNozzlesGas);
+          }} keyboardType="numeric" />
+          <Text>نازل {index + 1} - انتهای دوره:</Text>
+          <TextInput style={styles.input} value={nozzle.endPeriod} onChangeText={text => {
+            const newNozzlesGas = [...nozzlesGas];
+            newNozzlesGas[index].endPeriod = text;
+            setNozzlesGas(newNozzlesGas);
+          }} keyboardType="numeric" />
         </View>
       ))}
+      <Button title="اضافه کردن نازل گاز" onPress={handleAddNozzleGas} />
 
-      <Button
-        title="افزودن نازل گاز"
-        onPress={() =>
-          setNozzlesGas([...nozzlesGas, { startPeriod: '', endPeriod: '' }])
-        }
-      />
+      <Text style={styles.label}>مخازن بنزین:</Text>
+      {tanksFuel.map((tank, index) => (
+        <View key={index} style={styles.tankContainer}>
+          <Text>مخزن {index + 1} - انتهای دوره:</Text>
+          <TextInput style={styles.input} value={tank.endQuantity} onChangeText={text => {
+            const newTanksFuel = [...tanksFuel];
+            newTanksFuel[index].endQuantity = text;
+            setTanksFuel(newTanksFuel);
+          }} keyboardType="numeric" />
+        </View>
+      ))}
+      <Button title="اضافه کردن مخزن بنزین" onPress={handleAddTankFuel} />
+
+      <Text style={styles.label}>مخازن گاز:</Text>
+      {tanksGas.map((tank, index) => (
+        <View key={index} style={styles.tankContainer}>
+          <Text>مخزن {index + 1} - انتهای دوره:</Text>
+          <TextInput style={styles.input} value={tank.endQuantity} onChangeText={text => {
+            const newTanksGas = [...tanksGas];
+            newTanksGas[index].endQuantity = text;
+            setTanksGas(newTanksGas);
+          }} keyboardType="numeric" />
+        </View>
+      ))}
+      <Button title="اضافه کردن مخزن گاز" onPress={handleAddTankGas} />
 
       <Button title="محاسبه" onPress={handleCalculate} />
-    </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  label: {
+    marginVertical: 10,
+    fontWeight: 'bold',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+  },
+  nozzleContainer: {
+    marginBottom: 10,
+  },
+  tankContainer: {
+    marginBottom: 10,
+  },
+});
 
 export default InputForm;

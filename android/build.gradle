@@ -11,8 +11,9 @@ buildscript {
         ndkVersion = "26.1.10909125"
     }
     repositories {
+       mavenCentral()
         google()
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath('com.android.tools.build:gradle')
